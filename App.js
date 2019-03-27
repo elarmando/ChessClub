@@ -22,6 +22,7 @@
         this.Name = "";
         this.UserName = "";
         this.DailyRating = "";
+        this.Games = [];
     }
 
     function Start()
@@ -68,14 +69,37 @@
                 member.UserName = data.username;
                 member.DailyRating = stats.chess_daily.last.rating;
 
-                if(success instanceof Function)
-                    success(member);
+                GetGames(username, function(games){
+                    member.Games = games.games;
 
-            });         
+                    if(success instanceof Function)
+                        success(member);
+
+                }, error);
+
+            
+
+            }, error);         
         }
 
         r.onerror = error;
         r.open("GET","https://api.chess.com/pub/player/" + username, false );
+        r.send();
+    }
+
+    function GetGames(username, success, error)
+    {
+        var r = new XMLHttpRequest();
+        
+        r.onload = function(){
+            var data = JSON.parse(r.responseText);
+
+            if(success instanceof Function)
+                success(data);
+        }
+        r.onerror = error;
+
+        r.open("GET","https://api.chess.com/pub/player/" + username +"/games",false );
         r.send();
     }
 
@@ -97,18 +121,40 @@
 
     function CreateList()
     {
-        memberObjs = memberObjs.sort(function(a,b){
+        var unActive = [];
+        var active = [];
+
+        memberObjs.forEach(function(e){
+            if(e.Games <= 0)
+                unActive.push(e);
+            else
+                active.push(e);
+        });
+
+
+        active = active.sort(function(a,b){
             return b.DailyRating - a.DailyRating;
         });
         
+        unActive = unActive.sort(function(a,b){
+            return b.DailyRating - a.DailyRating;
+        });
+
        
-        var header = "<thead><tr><th>Position</th><th>Usuario</th><th>Nombre</th><th>Daily Rating</th></tr></thead>";
+        var header = "<thead><tr><th>Position</th><th>User</th><th>Name</th><th>Daily Rating</th><th>Current Games</th></tr></thead>";
        
         var body = "";
-        
-        memberObjs.forEach(function(data, index){
-            body+= "<tr>"+"<td>"+(index + 1)+"</td>" + "<td>"+data.UserName+"</td>"+ "<td>"+( (data.Name == undefined)? "" : data.Name) +"</td>"+ "<td>"+data.DailyRating+"</td>"+ "</tr>";
-          
+        var position = 0;
+
+        active.forEach(function(data, index){
+            position++;
+            body+= "<tr>"+"<td>"+(position )+"</td>" + "<td>"+data.UserName+"</td>"+ "<td>"+( (data.Name == undefined)? "" : data.Name) +"</td>"+ "<td>"+data.DailyRating+"</td>"+ "<td>"+data.Games.length+"</td>"+"</tr>";          
+           
+        });
+
+        unActive.forEach(function(data, index){
+            position++;
+            body+= "<tr>"+"<td>"+(position )+"</td>" + "<td>"+data.UserName+"</td>"+ "<td>"+( (data.Name == undefined)? "" : data.Name) +"</td>"+ "<td>"+data.DailyRating+"</td>"+ "<td>"+data.Games.length+"</td>"+"</tr>";          
         });
         
         body = "<tbody>"+ body +"</tbody>"
