@@ -4,16 +4,16 @@
         "armando_s",
         "pardo11pbc",
         "igniz16",
-        "Reshesvsky",
+        /*"Reshesvsky",*/
         "isaacruizc",
-        "luis_d2709",
+        /*"luis_d2709",*/
         "vkruz",
         "r-barrera",
-        "Zenemyj",
+       /* "Zenemyj",*/
         "jherrera64",
-        "ricardotenorio28",
+      /*  "ricardotenorio28",
         "marlendf",
-        "jonacruz"    
+        "jonacruz"    */
     ];
 
     var memberObjs = [];
@@ -24,6 +24,7 @@
         this.DailyRating = "";
         this.TacticsRating = null;
         this.BlitzRating = null;
+        this.DailyRating960 = null;
         this.LastConnection = null;
         this.Games = [];
     }
@@ -74,6 +75,7 @@
                 member.TacticsRating = stats.tactics.highest == undefined ? 0 : stats.tactics.highest.rating ;
                 member.LastConnection = new Date(data.last_online * 1000);
                 member.BlitzRating = stats.chess_blitz == undefined || stats.chess_blitz.best == undefined? 0: stats.chess_blitz.best.rating;
+                member.DailyRating960 = stats.chess960_daily == undefined || stats.chess960_daily.best == undefined?0 :stats.chess960_daily.best.rating;
 
                 GetGames(username, function(games){
                     member.Games = games.games;
@@ -125,30 +127,17 @@
         r.send();
     }
 
-    function CreateTacticsRatingTable()
+    function CreateTacticsRatingTable( membersActive, memberUnactive)
     {
         var unActive = [];
         var active = [];
-        var currentDateTime = new Date().getTime();
-        var dayTime = 1000*60*60*24;
-        var twoWeekTime = dayTime * 14;
-        var thresholdTime = twoWeekTime;
-
-        memberObjs.forEach(function(e){
-            var timeElapsed = currentDateTime - e.LastConnection.getTime();
-
-            if(timeElapsed > thresholdTime)
-                unActive.push(e);
-            else
-                active.push(e);
-        });
-
-
-        active = active.sort(function(a,b){
+       
+                            
+        active = membersActive.sort(function(a,b){
             return b.TacticsRating - a.TacticsRating;
         });
         
-        unActive = unActive.sort(function(a,b){
+        unActive = memberUnactive.sort(function(a,b){
             return b.TacticsRating - a.TacticsRating;
         });
 
@@ -174,30 +163,17 @@
         return "<table class='pure-table'>" + header + body + "</table>";
     }
 
-    function CreateDailyRatingTable()
+    function CreateDailyRatingTable(membersActive, memberUnactive)
     {
         var unActive = [];
         var active = [];
-        var currentDateTime = new Date().getTime();
-        var dayTime = 1000*60*60*24;
-        var twoWeekTime = dayTime * 14;
-        var thresholdTime = twoWeekTime;
-
-        memberObjs.forEach(function(e){
-            var timeElapsed = currentDateTime - e.LastConnection.getTime();
-
-            if(timeElapsed > thresholdTime)
-                unActive.push(e);
-            else
-                active.push(e);
-        });
 
 
-        active = active.sort(function(a,b){
+        active = membersActive.sort(function(a,b){
             return b.DailyRating - a.DailyRating;
         });
         
-        unActive = unActive.sort(function(a,b){
+        unActive = memberUnactive.sort(function(a,b){
             return b.DailyRating - a.DailyRating;
         });
 
@@ -223,30 +199,16 @@
         return "<table class='pure-table'>" + header + body + "</table>";
     }
 
-    function CreateBlitzRatingTable()
+    function CreateBlitzRatingTable(membersActive, memberUnactive)
     {
         var unActive = [];
         var active = [];
-        var currentDateTime = new Date().getTime();
-        var dayTime = 1000*60*60*24;
-        var twoWeekTime = dayTime * 14;
-        var thresholdTime = twoWeekTime;
 
-        memberObjs.forEach(function(e){
-            var timeElapsed = currentDateTime - e.LastConnection.getTime();
-
-            if(timeElapsed > thresholdTime)
-                unActive.push(e);
-            else
-                active.push(e);
-        });
-
-
-        active = active.sort(function(a,b){
+        active = membersActive.sort(function(a,b){
             return b.BlitzRating - a.BlitzRating;
         });
         
-        unActive = unActive.sort(function(a,b){
+        unActive = memberUnactive.sort(function(a,b){
             return b.BlitzRating - a.BlitzRating;
         });
 
@@ -271,15 +233,66 @@
 
         return "<table class='pure-table'>" + header + body + "</table>";
     }
+    function Create960RatingTable(membersActive, memberUnactive)
+    {
+        var unActive = [];
+        var active = [];
+
+        active = membersActive.sort(function(a,b){
+            return b.DailyRating960 - a.DailyRating960;
+        });
+        
+        unActive = memberUnactive.sort(function(a,b){
+            return b.DailyRating960 - a.DailyRating960;
+        });
+
+       
+        var header = "<thead><tr><th>Position</th><th>User</th><th>Name</th><th>960 Rating</th><th>Current Games</th><th>Last Connection</th></tr></thead>";
+       
+        var body = "";
+        var position = 0;
+
+        active.forEach(function(data, index){
+            position++;
+            body+= "<tr>"+"<td>"+(position )+"</td>" + "<td>"+data.UserName+"</td>"+ "<td>"+( (data.Name == undefined)? "" : data.Name) +"</td>"+ "<td>"+data.DailyRating960+"</td>"+ "<td>"+data.Games.length+"</td>"+"<td>"+data.LastConnection.toDateString()+"</td>"+"</tr>";          
+           
+        });
+
+        unActive.forEach(function(data, index){
+            position++;
+            body+= "<tr>"+"<td>"+(position )+"</td>" + "<td>"+data.UserName+"</td>"+ "<td>"+( (data.Name == undefined)? "" : data.Name) +"</td>"+ "<td>"+data.DailyRating960+"</td>"+ "<td>"+data.Games.length+"</td>"+"<td>"+data.LastConnection.toDateString()+ (" (Unactive)") +"</td>"+"</tr>";          
+        });
+        
+        body = "<tbody>"+ body +"</tbody>";
+
+        return "<table class='pure-table'>" + header + body + "</table>";
+    }
 
     function CreateList()
     {
+        var dayTime = 1000*60*60*24;
+        var twoWeekTime = dayTime * 14;
+        var currentDateTime = new Date().getTime();
+        var thresholdTime = twoWeekTime;
        
-        var html1 = CreateDailyRatingTable();
-        var html2 = CreateTacticsRatingTable();
-        var html3 = CreateBlitzRatingTable();
+        var unActive = [];
+        var active = [];
 
-        var html = "<div>Daily Rating</div>" + html1 + "<div>Tactics Rating</div>" + html2 + "<div>Blitz Rating</div>" + html3;
+        memberObjs.forEach(function(e){
+            var timeElapsed = currentDateTime - e.LastConnection.getTime();
+
+            if(timeElapsed > thresholdTime)
+                unActive.push(e);
+            else
+                active.push(e);
+        });
+       
+        var html1 = CreateDailyRatingTable(active, unActive);
+        var html2 = CreateTacticsRatingTable(active, unActive);
+        var html3 = CreateBlitzRatingTable(active, unActive);
+        var html4 = Create960RatingTable(active, unActive);
+
+        var html = "<div>Daily Rating</div>" + html1 + "<div>Tactics Rating</div>" + html2 + "<div>Blitz Rating</div>" + html3 + "<div>chess 960 Rating</div>" + html4;
 
         window.document.body.innerHTML = html;
     }
