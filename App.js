@@ -4,16 +4,20 @@
         "armando_s",
         "pardo11pbc",
         "igniz16",
-        /*"Reshesvsky",*/
+        "Reshesvsky",
         "isaacruizc",
         /*"luis_d2709",*/
         "vkruz",
         "r-barrera",
-       /* "Zenemyj",*/
+        "Zenemyj",
         "jherrera64",
-      /*  "ricardotenorio28",
-        "marlendf",
-        "jonacruz"    */
+        "danwro",
+        "yaird09",
+        "ricardotenorio28",
+        "romerovh",
+      /*  "ivonnelima",*/
+       /* "marlendf",*/
+        "Jona1302"    
     ];
 
     var memberObjs = [];
@@ -71,7 +75,7 @@
                 var member = new Member();
                 member.Name = data.name;
                 member.UserName = data.username;
-                member.DailyRating = stats.chess_daily.last.rating;
+                member.DailyRating = stats.chess_daily != undefined && stats.chess_daily.last != undefined ? stats.chess_daily.last.rating : 0;
                 member.TacticsRating = stats.tactics.highest == undefined ? 0 : stats.tactics.highest.rating ;
                 member.LastConnection = new Date(data.last_online * 1000);
                 member.BlitzRating = stats.chess_blitz == undefined || stats.chess_blitz.best == undefined? 0: stats.chess_blitz.best.rating;
@@ -277,6 +281,7 @@
        
         var unActive = [];
         var active = [];
+        var teamRatingDaily = 0;
 
         memberObjs.forEach(function(e){
             var timeElapsed = currentDateTime - e.LastConnection.getTime();
@@ -286,13 +291,29 @@
             else
                 active.push(e);
         });
+
+        var countMembers = 0;
+        var sumRating = 0;
+        active.forEach(function(e){
+
+          if(e.DailyRating != undefined && e.DailyRating != null)
+          {
+              sumRating += e.DailyRating;
+            countMembers++;
+          }
+
+        });
+
+        teamRatingDaily = (countMembers > 0)? sumRating / countMembers : 0;
+        teamRatingDaily = teamRatingDaily.toFixed(2);
+
        
         var html1 = CreateDailyRatingTable(active, unActive);
         var html2 = CreateTacticsRatingTable(active, unActive);
         var html3 = CreateBlitzRatingTable(active, unActive);
         var html4 = Create960RatingTable(active, unActive);
 
-        var html = "<div>Daily Rating</div>" + html1 + "<div>Tactics Rating</div>" + html2 + "<div>Blitz Rating</div>" + html3 + "<div>chess 960 Rating</div>" + html4;
+        var html = "<div>Daily Rating. (Team rating average: "+teamRatingDaily + ")</div>" + html1 + "<div>Tactics Rating</div>" + html2 + "<div>Blitz Rating</div>" + html3 + "<div>chess 960 Rating</div>" + html4;
 
         window.document.body.innerHTML = html;
     }
