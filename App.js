@@ -78,8 +78,8 @@
                 member.DailyRating = stats.chess_daily != undefined && stats.chess_daily.last != undefined ? stats.chess_daily.last.rating : 0;
                 member.TacticsRating = stats.tactics.highest == undefined ? 0 : stats.tactics.highest.rating ;
                 member.LastConnection = new Date(data.last_online * 1000);
-                member.BlitzRating = stats.chess_blitz == undefined || stats.chess_blitz.best == undefined? 0: stats.chess_blitz.best.rating;
-                member.DailyRating960 = stats.chess960_daily == undefined || stats.chess960_daily.best == undefined?0 :stats.chess960_daily.best.rating;
+                member.BlitzRating = stats.chess_blitz == undefined || stats.chess_blitz.last == undefined? 0: stats.chess_blitz.last.rating;
+                member.DailyRating960 = stats.chess960_daily == undefined || stats.chess960_daily.last == undefined?0 :stats.chess960_daily.last.rating;
 
                 GetGames(username, function(games){
                     member.Games = games.games;
