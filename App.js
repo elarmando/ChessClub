@@ -14,10 +14,12 @@
         "danwro",
         "yaird09",
         "ricardotenorio28",
-        "romerovh",
+        /*"romerovh",*/
       /*  "ivonnelima",*/
        /* "marlendf",*/
-        "Jona1302"    
+        "Jona1302",
+        "romulo119",
+        "richiizvl"
     ];
 
     var memberObjs = [];
