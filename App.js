@@ -3,7 +3,7 @@
     var miembros = [
         "armando_s",
         "pardo11pbc",
-        "igniz16",
+        /*"igniz16",*/
         "Reshesvsky",
         "isaacruizc",
         /*"luis_d2709",*/
@@ -19,8 +19,19 @@
        /* "marlendf",*/
         "Jona1302",
         "romulo119",
-        "richiizvl"
+        "richiizvl",
+        "OzzyMG"
     ];
+
+    var grupos = 
+    {
+        "ReportLoop": ["armando_s", "isaacruizc","jherrera64", "ricardotenorio28"],
+        "DataLoop Web": ["Reshesvsky", "vkruz", "r-barrera", "Zenemyj", "danwro", "Jona1302", "OzzyMG"],
+        "DataLoop Mobile":["yaird09"],
+        "AR":["pardo11pbc"],
+        "Practicantes":["romulo119", "richiizvl"]
+    }
+
 
     var memberObjs = [];
 
@@ -41,7 +52,7 @@
 
         miembros.forEach(function(member ){
             GetUserData(member, function(data){
-                debugger;
+                
                 membersCount++;
 
                 AppendUserData(data);
@@ -190,14 +201,16 @@
         var position = 0;
 
         active.forEach(function(data, index){
+            var dateString = (data.LastConnection == null || data.LastConnection == undefined)? "": data.LastConnection.toDateString();
             position++;
-            body+= "<tr>"+"<td>"+(position )+"</td>" + "<td>"+data.UserName+"</td>"+ "<td>"+( (data.Name == undefined)? "" : data.Name) +"</td>"+ "<td>"+data.DailyRating+"</td>"+ "<td>"+data.Games.length+"</td>"+"<td>"+data.LastConnection.toDateString()+"</td>"+"</tr>";          
+            body+= "<tr>"+"<td>"+(position )+"</td>" + "<td>"+data.UserName+"</td>"+ "<td>"+( (data.Name == undefined)? "" : data.Name) +"</td>"+ "<td>"+data.DailyRating+"</td>"+ "<td>"+data.Games.length+"</td>"+"<td>"+dateString+"</td>"+"</tr>";          
            
         });
 
         unActive.forEach(function(data, index){
+            var dateString = (data.LastConnection == null || data.LastConnection == undefined)? "": data.LastConnection.toDateString();
             position++;
-            body+= "<tr>"+"<td>"+(position )+"</td>" + "<td>"+data.UserName+"</td>"+ "<td>"+( (data.Name == undefined)? "" : data.Name) +"</td>"+ "<td>"+data.DailyRating+"</td>"+ "<td>"+data.Games.length+"</td>"+"<td>"+data.LastConnection.toDateString()+ (" (Unactive)") +"</td>"+"</tr>";          
+            body+= "<tr>"+"<td>"+(position )+"</td>" + "<td>"+data.UserName+"</td>"+ "<td>"+( (data.Name == undefined)? "" : data.Name) +"</td>"+ "<td>"+data.DailyRating+"</td>"+ "<td>"+data.Games.length+"</td>"+"<td>"+dateString+ (" (Unactive)") +"</td>"+"</tr>";          
         });
         
         body = "<tbody>"+ body +"</tbody>";
@@ -274,6 +287,69 @@
         return "<table class='pure-table'>" + header + body + "</table>";
     }
 
+    function CreateGruops(members, grupos)
+    {
+        debugger;
+
+        var userGroup = [];
+        for(var grupo in grupos)
+        {
+            if(grupos.hasOwnProperty(grupo))
+            {
+                var groupList = grupos[grupo];
+                var groupUser = new Member();
+
+                groupUser.Name = grupo;
+                groupUser.UserName = grupo;
+                groupUser.DailyRating = 0;
+                groupUser.TacticsRating = 0;
+                groupUser.BlitzRating = 0;
+                groupUser.DailyRating960 = 0;
+                groupUser.LastConnection = null;
+
+                var dailysum = 0;
+                var count = 0;
+
+                console.log("Grupo: " + grupo);
+                var miembrosStr = "";
+
+                members.forEach(function(mem){
+
+                    var exists = false;
+
+                    groupList.forEach(function(userInList){
+                        if(mem.UserName == userInList.toLowerCase())
+                        {
+                            miembrosStr+= mem.UserName+ ",";
+                            exists = true;
+                            return false;
+                        }
+                    });
+
+                    if(exists)
+                    {
+                        count++;
+
+                        if(mem.DailyRating != undefined && mem.DailyRating != null)
+                        {
+                            dailysum += mem.DailyRating;
+                        }
+                    }
+
+                });
+
+                console.log(miembrosStr);
+
+                if(count > 0)
+                    groupUser.DailyRating = dailysum / count;
+
+                userGroup.push(groupUser);
+            }
+        }
+
+        return userGroup;
+    }
+
     function CreateList()
     {
         var dayTime = 1000*60*60*24;
@@ -309,13 +385,17 @@
         teamRatingDaily = (countMembers > 0)? sumRating / countMembers : 0;
         teamRatingDaily = teamRatingDaily.toFixed(2);
 
+        var membersGroup = CreateGruops(active, grupos);
+
        
         var html1 = CreateDailyRatingTable(active, unActive);
         var html2 = CreateTacticsRatingTable(active, unActive);
         var html3 = CreateBlitzRatingTable(active, unActive);
         var html4 = Create960RatingTable(active, unActive);
 
-        var html = "<div>Daily Rating. (Team rating average: "+teamRatingDaily + ")</div>" + html1 + "<div>Tactics Rating</div>" + html2 + "<div>Blitz Rating</div>" + html3 + "<div>chess 960 Rating</div>" + html4;
+        var html5 = CreateDailyRatingTable(membersGroup, []);
+
+        var html = "<div>Daily Rating. (Team rating average: "+teamRatingDaily + ")</div>" + html1 + "<div>Tactics Rating</div>" + html2 + "<div>Blitz Rating</div>" + html3 + "<div>chess 960 Rating</div>" + html4+ "<div>projects Rating</div>"+ html5; 
 
         window.document.body.innerHTML = html;
     }
