@@ -19,17 +19,18 @@
        /* "marlendf",*/
         "Jona1302",
         "romulo119",
-        "richiizvl",
-        "OzzyMG"
+        "OzzyMG",
+        "eutiquior",
+        "allDmnz"
     ];
 
     var grupos = 
     {
         "ReportLoop": ["armando_s", "isaacruizc","jherrera64", "ricardotenorio28"],
         "DataLoop Web": ["Reshesvsky", "vkruz", "r-barrera", "Zenemyj", "danwro", "Jona1302", "OzzyMG"],
-        "DataLoop Mobile":["yaird09"],
-        "AR":["pardo11pbc"],
-        "Practicantes":["romulo119", "richiizvl"]
+        "DataLoop Mobile":["yaird09", "allDmnz"],
+        "AR":["pardo11pbc", "romulo119"],
+        "Practicantes":["eutiquior"]
     }
 
 
