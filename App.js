@@ -21,16 +21,17 @@
         "romulo119",
         "OzzyMG",
         "eutiquior",
-        "allDmnz"
+        "allDmnz",
+        "marco_winchester"
     ];
 
     var grupos = 
     {
-        "ReportLoop": ["armando_s", "isaacruizc","jherrera64", "ricardotenorio28"],
+        "ReportLoop": ["armando_s", "isaacruizc","jherrera64", "ricardotenorio28","eutiquior"],
         "DataLoop Web": ["Reshesvsky", "vkruz", "r-barrera", "Zenemyj", "danwro", "Jona1302", "OzzyMG"],
         "DataLoop Mobile":["yaird09", "allDmnz"],
         "AR":["pardo11pbc", "romulo119"],
-        "Practicantes":["eutiquior"]
+        "Practicantes":["marco_winchester"]
     }
 
 
