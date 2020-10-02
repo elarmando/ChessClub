@@ -22,7 +22,8 @@
         "OzzyMG",
         "eutiquior",
         "allDmnz",
-        "marco_winchester"
+        "marco_winchester",
+        "marcusgtz"
     ];
 
     var grupos = 
@@ -31,7 +32,7 @@
         "DataLoop Web": ["Reshesvsky", "vkruz", "r-barrera", "Zenemyj", "danwro", "Jona1302", "OzzyMG"],
         "DataLoop Mobile":["yaird09", "allDmnz"],
         "AR":["pardo11pbc", "romulo119"],
-        "Practicantes":["marco_winchester"]
+        "Practicantes":["marco_winchester", "marcusgtz"]
     }
 
 
