@@ -53,6 +53,8 @@
         this.Games = [];
     }
 
+   
+
     function Start()
     {
         var membersCount = 0;
@@ -74,6 +76,9 @@
             if(membersCount == miembros.length)                
                 CreateList();
         });
+
+       /*  var crossTable = new CrossTable(miembros);
+        crossTable.Create(); */
         
     }
 
@@ -356,6 +361,8 @@
 
         return userGroup;
     }
+
+   
 
     function CreateList()
     {
