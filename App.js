@@ -78,7 +78,7 @@
         });
 
        /*  var crossTable = new CrossTable(miembros);
-        crossTable.Create(); */
+        crossTable.InitTable(); */
         
     }
 
