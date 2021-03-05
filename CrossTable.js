@@ -6,6 +6,15 @@ function CrossTable(membersList)
     this.MembersIndex = {};
     this.Table = null;
 
+    this.OnFinish = null;
+
+    this.ResultCode =
+    {
+        Win: 1,
+        Draw: 0,
+        Lost: -1
+    }
+
     this.InitTable = function()
     {
         var members = this.Members;
@@ -26,46 +35,67 @@ function CrossTable(membersList)
         this.Table = table;
 
         console.log(this.MembersIndex);
-        this.Create();
+        //this.Create();
     }
 
     this.Create = function () 
     {
         var members = this.Members;
+        this.ProcessAllMembers(0, members, this.OnFinish);
+    }
 
-        var finish = function (games) {
-            console.log(games);
-            self.UpdateTable(members[0], games);
-            console.log(self.Table);
+    this.ProcessAllMembers = function(index, members, onfinish)
+    {
+        if(index >= members.length)
+        {
+            if(onfinish instanceof Function)
+                onfinish();
+            return;
         }
 
+        this.ProcessMember(members[index], function(){
+            setTimeout(function(){
+               self.ProcessAllMembers(index + 1, members, onfinish); 
+            },0);
+        });
+
+    }
+
+    this.ProcessMember = function(member, onfinish)
+    {
         var progress = function (progress, total, games) {
-            console.log("progress " + progress + "/" + total);
-        }
-
-        this.DownloadHistory(members[0], 2019, finish, progress);
+            console.log(member + " progress " + progress + "/" + total);
+        };
+        this.DownloadHistory(member, 2019, function(games){
+            self.UpdateTable(member, games);
+            if(onfinish instanceof Function)
+                onfinish();
+            console.log(self.Table);
+        }, progress);
     }
 
     this.UpdateTable = function (member, games) {
         var members = this.Members;
+        var memberUpper = member.toUpperCase();
 
         for (var i = 0; i < games.length; i++) {
             var game = games[i];
 
             for (var j = 0; j < members.length; j++) {
                 var imember = members[j];
-                var toUpperMember = imember.toUpperCase();
+                var imemberUpper = imember.toUpperCase();
 
                 if (imember != member) {
-                    if (toUpperMember == game.white.username.toUpperCase()) {
-                        //oponent played white
-                        var memberWon = game.black.result == "win";
-                        this.UpdateCell(member, imember, memberWon);
+
+                    if(imemberUpper == game.white.username.toUpperCase() )//enemy is white
+                    {
+                        var code = this.ParseResultCode(game.black.result);
+                        this.UpdateCell(member, imember, code);
                     }
-                    else if (toUpperMember == game.black.username.toUpperCase()) {
-                        //oponent played black
-                        var memberWon = game.white.result == "win";
-                        this.UpdateCell(member, imember, memberWon);
+                    else if( imemberUpper == game.black.username.toUpperCase()) //enemy is black
+                    {
+                        var code = this.ParseResultCode(game.white.result);
+                        this.UpdateCell(member, imember, code);
                     }
                 }
             }
@@ -73,26 +103,64 @@ function CrossTable(membersList)
 
     }
 
-    this.UpdateCell = function(member1, member2, won1)
-    {
+    this.UpdateCell = function (member1, member2, resultCode) {
         var indexMember1 = this.MembersIndex[member1];
         var indexMember2 = this.MembersIndex[member2];
 
         var cell1 = this.Table[indexMember1][indexMember2];
         var cell2 = this.Table[indexMember2][indexMember1];
 
-        if(won1)
-        {
+        if (resultCode == this.ResultCode.Win) {
             cell1.Won();
             cell2.Lost();
         }
-        else
-        {
+        else if (resultCode == this.ResultCode.Lost) {
             cell1.Lost();
             cell2.Won();
         }
+        else if (resultCode == this.ResultCode.Draw) {
+            cell1.Draw();
+            cell2.Draw();
+        }
     }
-  
+
+    this.ParseResultCode = function (code) {
+        /*
+            Code	Description
+            win	-> Win
+            checkmated	-> Checkmated
+            agreed -> 	Draw agreed
+            repetition	-> Draw by repetition
+            timeout	->Timeout
+            resigned	->Resigned
+            stalemate	->Stalemate
+            lose	->Lose
+            insufficient	->Insufficient material
+            50move	->Draw by 50-move rule
+            abandoned	->Abandoned
+            kingofthehill	->Opponent king reached the hill
+            threecheck	->Checked for the 3rd time
+            timevsinsufficient	->Draw by timeout vs insufficient material
+            bughousepartnerlose	->Bughouse partner lost
+        */
+
+        if ("win" == code)
+            return this.ResultCode.Win;
+        else if ("checkmated" == code || "timeout" == code || "resigned" == code
+            || "lose" == code || "abandoned" == code || "kingofthehill" == code
+            || "threecheck" == code)
+            return this.ResultCode.Lost;
+        else if ("agreed" == code || "repetition" == code
+            || "stalemate" == code || "insufficient" == code
+            || "50move" == code || "timevsinsufficient" == code
+            || "bughousepartnerlose" == code)
+            return this.ResultCode.Draw;
+
+        return undefined;
+    }
+
+
+
     this.FilterArchivesFrom = function (archives, yearSince) {
         var filtered = [];
 
@@ -115,6 +183,12 @@ function CrossTable(membersList)
             var archives = history.archives;
             archives = self.FilterArchivesFrom(archives, fromYear);//im only interested in games from 2019 to present
 
+            if(archives.length == 0)
+            {
+                finish([]);
+                return;
+            }
+            
             self.DownloadGames(0, archives, function (index, partialGames) {
                 for (var i = 0; i < partialGames.games.length; i++)
                     games.push(partialGames.games[i]);
@@ -130,7 +204,10 @@ function CrossTable(membersList)
 
     this.DownloadGames = function (index, archives, finish) {
         if (index >= archives.length)
+        {
             return;
+        }
+          
 
         var url = archives[index];
 
@@ -179,15 +256,22 @@ function CrossTable(membersList)
 function CrossTableItem() {
     this.WonGames = 0;
     this.LostGames = 0;
-    this.Total = 0;
+    this.DrawGames = 0;
 
     this.Won = function () {
         this.WonGames++;
-        this.Total++;
     }
 
     this.Lost = function () {
         this.LostGames++;
-        this.Total++;
+    }
+
+    this.Draw = function () {
+        this.DrawGames++;
+    }
+
+    this.ToString = function()
+    {
+        return "Win:" + this.WonGames + ", Lost:" + this.LostGames + ", Draw:" + this.DrawGames;
     }
 }
