@@ -62,7 +62,9 @@
 
     function CreateCrossTable()
     {
-        var crossTable = new CrossTable(miembros);
+        var members = miembros;
+        //var members = [miembros[0], miembros[2]];
+        var crossTable = new CrossTable(members);
         crossTable.InitTable();
         crossTable.OnFinish = function()
         {
@@ -96,7 +98,7 @@
             for(var x = 0; x < row.length; x++)
             {
                 var cell = row[x];
-                rowBody += "<td>" + cell.ToString() + "</td>";
+                rowBody += "<td>"  +cell.CalcScoreString() + "</td>";
             }
 
             rowBody = "<tr>" + rowBody + "</tr>";
@@ -110,104 +112,15 @@
 
     function CreateLists(onfinish)
     {
-        var membersCount = 0;
-        miembros.forEach(function (member) {
-            GetUserData(member, function (data) {
+        var members = miembros;
+        var ratingTable = new RatingTable(miembros);
+        ratingTable.GetMembersData(function(data){
+            memberObjs = ratingTable.MembersObjs;
+            CreateList();
 
-                membersCount++;
-
-                AppendUserData(data);
-
-                if (membersCount == miembros.length)
-                {
-                    CreateList();
-                    
-                    if(onfinish instanceof Function)
-                        onfinish();
-                }
-
-            });
-        }, function () {
-            membersCount++;
-
-            if (membersCount == miembros.length)
-            {
-                CreateList();
-
-                if (onfinish instanceof Function)
-                    onfinish();
-            }
+            if(onfinish instanceof Function)
+                onfinish();
         });
-    }
-
-    function AppendUserData(data) {
-        memberObjs.push(data);
-    }
-
-
-    function GetUserData(username, success, error) {
-        var r = new XMLHttpRequest();
-
-        r.onload = function () {
-            var data = JSON.parse(r.responseText);
-
-            GetStats(username, function (stats) {
-
-                var member = new Member();
-                member.Name = data.name;
-                member.UserName = data.username;
-                member.DailyRating = stats.chess_daily != undefined && stats.chess_daily.last != undefined ? stats.chess_daily.last.rating : 0;
-                member.TacticsRating = stats.tactics.highest == undefined ? 0 : stats.tactics.highest.rating;
-                member.LastConnection = new Date(data.last_online * 1000);
-                member.BlitzRating = stats.chess_blitz == undefined || stats.chess_blitz.last == undefined ? 0 : stats.chess_blitz.last.rating;
-                member.DailyRating960 = stats.chess960_daily == undefined || stats.chess960_daily.last == undefined ? 0 : stats.chess960_daily.last.rating;
-
-                GetGames(username, function (games) {
-                    member.Games = games.games;
-
-                    if (success instanceof Function)
-                        success(member);
-
-                }, error);
-
-
-
-            }, error);
-        }
-
-        r.onerror = error;
-        r.open("GET", "https://api.chess.com/pub/player/" + username, false);
-        r.send();
-    }
-
-    function GetGames(username, success, error) {
-        var r = new XMLHttpRequest();
-
-        r.onload = function () {
-            var data = JSON.parse(r.responseText);
-
-            if (success instanceof Function)
-                success(data);
-        }
-        r.onerror = error;
-
-        r.open("GET", "https://api.chess.com/pub/player/" + username + "/games", false);
-        r.send();
-    }
-
-    function GetStats(username, success, error) {
-        var r = new XMLHttpRequest();
-
-        r.onload = function () {
-            var data = JSON.parse(r.responseText);
-
-            if (success instanceof Function)
-                success(data);
-        }
-        r.onerror = error;
-
-        r.open("GET", "https://api.chess.com/pub/player/" + username + "/stats", false);
-        r.send();
     }
 
     function CreateTacticsRatingTable(membersActive, memberUnactive) {

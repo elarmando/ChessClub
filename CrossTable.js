@@ -5,6 +5,7 @@ function CrossTable(membersList)
     this.Members = membersList;
     this.MembersIndex = {};
     this.Table = null;
+    this.ChessDotApi = new ChessDotCom();
 
     this.OnFinish = null;
 
@@ -76,27 +77,26 @@ function CrossTable(membersList)
 
     this.UpdateTable = function (member, games) {
         var members = this.Members;
-        var memberUpper = member.toUpperCase();
 
         for (var i = 0; i < games.length; i++) {
             var game = games[i];
 
-            for (var j = 0; j < members.length; j++) {
-                var imember = members[j];
+            var res = this._FindMemberInGame(game, members, member);
+
+            if(res.Index > -1)//this game was played by one of our members
+            {
+                var imember = members[res.Index];
                 var imemberUpper = imember.toUpperCase();
 
-                if (imember != member) {
-
-                    if(imemberUpper == game.white.username.toUpperCase() )//enemy is white
-                    {
-                        var code = this.ParseResultCode(game.black.result);
-                        this.UpdateCell(member, imember, code);
-                    }
-                    else if( imemberUpper == game.black.username.toUpperCase()) //enemy is black
-                    {
-                        var code = this.ParseResultCode(game.white.result);
-                        this.UpdateCell(member, imember, code);
-                    }
+                if(imemberUpper == game.white.username.toUpperCase() )//enemy is white
+                {
+                    var code = this.ParseResultCode(game.black.result);
+                    this.UpdateCell(member, imember, code);
+                }
+                else if( imemberUpper == game.black.username.toUpperCase()) //enemy is black
+                {
+                    var code = this.ParseResultCode(game.white.result);
+                    this.UpdateCell(member, imember, code);
                 }
             }
         }
@@ -108,19 +108,19 @@ function CrossTable(membersList)
         var indexMember2 = this.MembersIndex[member2];
 
         var cell1 = this.Table[indexMember1][indexMember2];
-        var cell2 = this.Table[indexMember2][indexMember1];
+        //var cell2 = this.Table[indexMember2][indexMember1];
 
         if (resultCode == this.ResultCode.Win) {
             cell1.Won();
-            cell2.Lost();
+        //    cell2.Lost();
         }
         else if (resultCode == this.ResultCode.Lost) {
             cell1.Lost();
-            cell2.Won();
+        //    cell2.Won();
         }
         else if (resultCode == this.ResultCode.Draw) {
             cell1.Draw();
-            cell2.Draw();
+        //    cell2.Draw();
         }
     }
 
@@ -159,6 +159,28 @@ function CrossTable(membersList)
         return undefined;
     }
 
+    this._FindMemberInGame = function(game, members, skipMember)
+    {
+        var len = members.length;
+        var whiteUser = game.white.username.toUpperCase();
+        var blackUser = game.black.username.toUpperCase();
+        var res = {Index : -1, IsWhite: true};
+
+        for(var i = 0; i < len; i++)
+        {
+            var imember = members[i];
+            if(imember != skipMember)
+            {
+                var memberName = members[i].toUpperCase();
+                if (whiteUser == memberName)
+                    return { Index: i, IsWhite: true };
+                if (blackUser == memberName)
+                    return { Index: i, IsWhite: false };
+            }
+        }
+
+        return res;
+    }
 
 
     this.FilterArchivesFrom = function (archives, yearSince) {
@@ -183,12 +205,11 @@ function CrossTable(membersList)
             var archives = history.archives;
             archives = self.FilterArchivesFrom(archives, fromYear);//im only interested in games from 2019 to present
 
-            if(archives.length == 0)
-            {
+            if (archives.length == 0) {
                 finish([]);
                 return;
             }
-            
+
             self.DownloadGames(0, archives, function (index, partialGames) {
                 for (var i = 0; i < partialGames.games.length; i++)
                     games.push(partialGames.games[i]);
@@ -203,11 +224,10 @@ function CrossTable(membersList)
     }
 
     this.DownloadGames = function (index, archives, finish) {
-        if (index >= archives.length)
-        {
+        if (index >= archives.length) {
             return;
         }
-          
+
 
         var url = archives[index];
 
@@ -221,18 +241,7 @@ function CrossTable(membersList)
     }
 
     this.GetHistory = function (username, success, error) {
-        var r = new XMLHttpRequest();
-
-        r.onload = function () {
-            var data = JSON.parse(r.responseText);
-
-            if (success instanceof Function)
-                success(data);
-        }
-        r.onerror = error;
-
-        r.open("GET", "https://api.chess.com/pub/player/" + username + "/games/archives", false);
-        r.send();
+        this.ChessDotApi.GetArchives(username, success, error);
     }
 
     this.GetGames = function (url, success, error) {
@@ -270,8 +279,13 @@ function CrossTableItem() {
         this.DrawGames++;
     }
 
-    this.ToString = function()
-    {
+    this.CalcScoreString = function () {
+        var myPoints = this.WonGames + (this.DrawGames * 0.5);
+        var enemyPoints = this.LostGames + (this.DrawGames * 0.5);
+        return myPoints + "/" + enemyPoints;
+    }
+
+    this.ToString = function () {
         return "Win:" + this.WonGames + ", Lost:" + this.LostGames + ", Draw:" + this.DrawGames;
     }
 }
