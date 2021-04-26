@@ -25,7 +25,9 @@
         "marco_winchester",
         "marcusgtz",
         "Any301",
-        "JCix6"
+        "JCix6",
+        "jorgemod",
+        "valentinvaldivieso"
         
         
     ];
