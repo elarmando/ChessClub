@@ -2,12 +2,12 @@
 (function Main(){
     var miembros = [
         "armando_s",
-        "pardo11pbc",
+       /* "pardo11pbc",*/
         /*"igniz16",*/
         "Reshesvsky",
         "isaacruizc",
         /*"luis_d2709",*/
-        "vkruz",
+       /* "vkruz",*/
         "r-barrera",
         "Zenemyj",
         "jherrera64",
@@ -27,17 +27,17 @@
         "Any301",
         "JCix6",
         "jorgemod",
-        "valentinvaldivieso"
-        
-        
+       // "valentinvaldivieso",*/
+        "David_Zuniga616",
+        "omargarduza"
     ];
 
     var grupos = 
     {
         "ReportLoop": ["armando_s", "isaacruizc","jherrera64", "ricardotenorio28","eutiquior"],
-        "DataLoop Web": ["Reshesvsky", "vkruz", "r-barrera", "Zenemyj", "danwro", "Jona1302", "OzzyMG"],
+        "DataLoop Web": ["Reshesvsky", "r-barrera", "Zenemyj", "danwro", "Jona1302", "OzzyMG"],
         "DataLoop Mobile":["yaird09", "allDmnz"],
-        "AR":["pardo11pbc", "romulo119"],
+        "AR":["romulo119"],
         "Practicantes":["marco_winchester", "marcusgtz"]
     }
 
