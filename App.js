@@ -29,7 +29,12 @@
         "jorgemod",
        // "valentinvaldivieso",*/
         "David_Zuniga616",
-        "omargarduza"
+        "omargarduza",
+        "Merficius",
+        "MazapanGarcia",
+        "SantosJe95",
+        "isecma",
+        "MauricioTenorioSnowBall"
     ];
 
     var grupos = 
@@ -58,7 +63,7 @@
     function Start()
     {
         CreateLists(function(){
-            CreateCrossTable();
+            //CreateCrossTable();
         });
     }
 
