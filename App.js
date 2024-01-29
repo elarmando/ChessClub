@@ -22,7 +22,7 @@
         "OzzyMG",
         "eutiquior",
         "allDmnz",
-        "marco_winchester",
+      /*  "marco_winchester",*/
         "marcusgtz",
         "Any301",
         "JCix6",
@@ -34,7 +34,11 @@
         "MazapanGarcia",
         "SantosJe95",
         "isecma",
-        "MauricioTenorioSnowBall"
+        "MauricioTenorioSnowBall",
+        "Armax7",//armando garcia
+        "Mr_V5"//daniel de la torre
+
+    
     ];
 
     var grupos = 
@@ -365,13 +369,14 @@
 
 
         var html1 = CreateDailyRatingTable(active, unActive);
-        var html2 = CreateTacticsRatingTable(active, unActive);
+        /*var html2 = CreateTacticsRatingTable(active, unActive);
         var html3 = CreateBlitzRatingTable(active, unActive);
         var html4 = Create960RatingTable(active, unActive);
         var html5 = CreateDailyRatingTable(membersGroup, []);
 
         var html = "<div>Daily Rating. (Team rating average: " + teamRatingDaily + ")</div>" + html1 + "<div>Tactics Rating</div>" + html2 + "<div>Blitz Rating</div>" + html3 + "<div>chess 960 Rating</div>" + html4 + "<div>projects Rating</div>" + html5;
-
+*/
+var html = "<div>Daily Rating. (Team rating average: " + teamRatingDaily + ")</div>" + html1 ;
         window.document.body.innerHTML = html;
     }
 
