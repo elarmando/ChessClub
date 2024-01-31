@@ -39,7 +39,8 @@
         "Mr_V5",//daniel de la torre
         "ErikPray", 
         "Adrian_0100",
-        "jehiel_g"
+        "jehiel_g",
+        "DominusDrow"//alfredo vazquez
     ];
 
     var grupos = 
