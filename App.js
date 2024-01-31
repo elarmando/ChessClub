@@ -36,9 +36,10 @@
         "isecma",
         "MauricioTenorioSnowBall",
         "Armax7",//armando garcia
-        "Mr_V5"//daniel de la torre
-
-    
+        "Mr_V5",//daniel de la torre
+        "ErikPray", 
+        "Adrian_0100",
+        "jehiel_g"
     ];
 
     var grupos = 
