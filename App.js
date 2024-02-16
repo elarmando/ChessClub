@@ -336,7 +336,7 @@
 
     function CreateList() {
         var dayTime = 1000 * 60 * 60 * 24;
-        var twoWeekTime = dayTime * 14;
+        var twoWeekTime = dayTime * 45;
         var currentDateTime = new Date().getTime();
         var thresholdTime = twoWeekTime;
 
