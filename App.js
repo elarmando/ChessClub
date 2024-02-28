@@ -40,7 +40,8 @@
         "ErikPray", 
         "Adrian_0100",
         "jehiel_g",
-        "DominusDrow"//alfredo vazquez
+        "DominusDrow",//alfredo vazquez
+        "Charlitos3000"
     ];
 
     var grupos = 
