@@ -348,7 +348,7 @@
         memberObjs.forEach(function (e) {
             var timeElapsed = currentDateTime - e.LastConnection.getTime();
 
-            if (timeElapsed > thresholdTime)
+            if (timeElapsed > thresholdTime && e.Games.length <= 0)
                 unActive.push(e);
             else
                 active.push(e);
